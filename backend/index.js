@@ -32,9 +32,9 @@ mongoose.connect(mongoURI)
 
 
 app.post('/signup', async (req, res) => {
-    const { name,email, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!email || !password) {
         return res.status(400).send({
             message: "All fields are required"
         });
@@ -52,14 +52,13 @@ app.post('/signup', async (req, res) => {
 
 
         const user = new Users({
-            name,
             email,
             password: hash
         });
         await user.save();
 
 
-        const payload = { name, email };
+        const payload = { email };
         const tokens = generateJwt(payload);
 
 
