@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Checkout() {
   const [formData, setFormData] = useState({
@@ -16,14 +18,14 @@ function Checkout() {
   };
 
   const handleSubmit = (e) => {
-    alert(`Order placed`);
+    toast.success(`Order placed`);
   };
 
   return (
     <div className="container mx-auto mt-10 p-4">
       <h2 className="text-2xl font-semibold mb-6">Checkout</h2>
       <form onSubmit={handleSubmit}>
-        {/* Shipping Information */}
+
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-4">Shipping Information</h3>
           <div className="mb-4">
@@ -40,7 +42,7 @@ function Checkout() {
           </div>
         </div>
 
-        {/* Payment Information */}
+
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-4">Payment Information</h3>
           <div className="mb-4">
