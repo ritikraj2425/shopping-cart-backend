@@ -47,15 +47,18 @@ app.post('/signup', async (req, res) => {
         if (checkEmail) {
             return res.status(400).send({ message: "Email is already registered" });
         }
+        console.log("check1")
         const hash = await bcrypt.hash(password, 10);
         const user = new Users({
             email,
             password: hash
         });
+        console.log("check2")
 
         await user.save();
         const payload = { email };
         const tokens = generateJwt(payload);
+        console.log("check3")
 
         await fetch('http://localhost:5000/sendEmail', {
             method: 'POST',
@@ -68,6 +71,7 @@ app.post('/signup', async (req, res) => {
                 content: 'Thank you for joining the shopping cart'
             })
         });
+        console.log("check4")
 
         console.log("Email sent successfully to:", email);
 
