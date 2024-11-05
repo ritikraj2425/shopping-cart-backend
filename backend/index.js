@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {generateJwt} = require("./middleware");
+const { generateJwt } = require("./middleware");
 const mongoURI = process.env.MONGO_URI;
 const port = 3001;
 
@@ -31,6 +31,7 @@ mongoose.connect(mongoURI)
 
 
 
+
 app.post('/signup', async (req, res) => {
     const { email, password } = req.body;
 
@@ -46,20 +47,31 @@ app.post('/signup', async (req, res) => {
         if (checkEmail) {
             return res.status(400).send({ message: "Email is already registered" });
         }
-
-
         const hash = await bcrypt.hash(password, 10);
-
-
         const user = new Users({
             email,
             password: hash
         });
+
         await user.save();
 
-
         const payload = { email };
+
         const tokens = generateJwt(payload);
+
+        await fetch('http://localhost:5000/sendEmail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to: email,
+                subject: 'Welcome to shopping cart',
+                content: 'Thank you for joining the shopping cart'
+            })
+        });
+
+        console.log("Email sent successfully to:", email);
 
 
         res.status(200).send({
@@ -68,13 +80,14 @@ app.post('/signup', async (req, res) => {
             refresh_token: tokens.refresh_token
         });
     } catch (error) {
-
+        console.log(error)
         res.status(500).send({
             message: "An error occurred",
             error: error.message
         });
     }
 });
+
 
 
 
@@ -86,14 +99,14 @@ app.post('/login', async (req, res) => {
     }
     try {
         let user;
-        
 
-            user = await Users.findOne({ email: email });
-            if (!user) {
-                res.status(404).send({ message: "User with this email does not exist" });
-                return;
-            }
-        
+
+        user = await Users.findOne({ email: email });
+        if (!user) {
+            res.status(404).send({ message: "User with this email does not exist" });
+            return;
+        }
+
 
         const checkPassword = await bcrypt.compare(password, user.password);
         if (!checkPassword) {
