@@ -22,7 +22,8 @@ const SignupPage = () => {
             const response = await fetch('https://shopping-cart-backend-tan.vercel.app/signup', {
                 method: 'POST',
                 body: JSON.stringify({
-                    email, password
+                    email: email, 
+                    password: password
                 }),
                 headers: {
                     'content-type': 'application/json',
