@@ -32,64 +32,45 @@ mongoose.connect(mongoURI)
 
 
 
-app.post('/signup', async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).send({
-            message: "All fields are required"
-        });
-    }
-
-    try {
-
-        const checkEmail = await Users.findOne({ email: email });
-        if (checkEmail) {
-            return res.status(400).send({ message: "Email is already registered" });
+    app.post('/signup', async (req, res) => {
+        const { email, password } = req.body;
+    
+        if (!email || !password) {
+            return res.status(400).send({
+                message: "All fields are required"
+            });
         }
-
-        const hash = await bcrypt.hash(password, 10);
-        const user = new Users({
-            email,
-            password: hash
-        });
-
-
-        await user.save();
-        const payload = { email };
-        const tokens = generateJwt(payload);
-
-
-        // await fetch('http://localhost:5000/sendEmail', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         to: email,
-        //         subject: 'Welcome to shopping cart',
-        //         content: 'Thank you for joining the shopping cart'
-        //     })
-        // });
-        // console.log("check4")
-
-        // console.log("Email sent successfully to:", email);
-
-
-        res.status(200).send({
-            message: "Success",
-            token: tokens.token,
-            refresh_token: tokens.refresh_token
-        });
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({
-            message: "An error occurred",
-            error: error.message
-        });
-    }
-});
-
+    
+        try {
+            const checkEmail = await Users.findOne({ email: email });
+            if (checkEmail) {
+                return res.status(400).send({ message: "Email is already registered" });
+            }
+    
+            const hash = await bcrypt.hash(password, 10);
+            const user = new Users({
+                email,
+                password: hash
+            });
+    
+            await user.save();
+            const payload = { email };
+            const tokens = generateJwt(payload);
+    
+            res.status(201).send({
+                message: "Success",
+                token: tokens.token,
+                refresh_token: tokens.refresh_token
+            });
+        } catch (error) {
+            console.error("Signup error:", error);
+            res.status(500).send({
+                message: "An error occurred",
+                error: error.message
+            });
+        }
+    });
+    
 
 
 
