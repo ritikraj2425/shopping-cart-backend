@@ -54,9 +54,7 @@ app.post('/signup', async (req, res) => {
         });
 
         await user.save();
-
         const payload = { email };
-
         const tokens = generateJwt(payload);
 
         await fetch('http://localhost:5000/sendEmail', {
